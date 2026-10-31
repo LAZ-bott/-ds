@@ -36,9 +36,9 @@
     "config.section.ai-config": "AI configuration",
     "config.ai-config.desc": "All options below require your own API key to be effective. You still can use the mod but will have a limited usage. Return to title screen to see the options.",
     "config.key.name": "Key",
-    "config.key.tooltip": "OpenAI or Gemini key. See mod page for instructions how to get one.\nOpenAI keys: https://platform.openai.com/account/api-keys\nGemini keys: https://aistudio.google.com/apikey",
+    "config.key.tooltip": "API key for the selected provider. For Custom, enter your provider's API key.",
     "config.model.name": "Model",
-    "config.model.tooltip": "Choose which model to use.\nOf course if you using OpenAI key, choose one of the OpenAI models; and vice versa for Gemini key.",
+    "config.model.tooltip": "Choose a built-in model for OpenAI/Gemini, or type the exact model ID when Custom is selected.",
     "config.section.pacing": "These options control event quality and pacing.",
     "config.allow-early-event.name": "Ignore heart-level requirements",
     "config.allow-early-event.tooltip": "If enabled, you have access to events without the usual heart-level limits.\nRestart the game after changing this option.",
@@ -60,5 +60,9 @@
     "config.event-length.extra-long": "Extra long (up to 20 lines)",
     "config.characteristic-mode.minimal": "Minimal (lower token use)",
     "config.characteristic-mode.short": "Standard (recommended)",
-    "config.characteristic-mode.long": "Detailed (higher token use)"
+    "config.characteristic-mode.long": "Detailed (higher token use)",
+    "config.provider.name": "AI provider",
+    "config.provider.tooltip": "Auto preserves the original model-based routing. Choose Custom for an OpenAI-compatible API such as DeepSeek.",
+    "config.base-url.name": "Custom API base URL",
+    "config.base-url.tooltip": "DeepSeek: https://api.deepseek.com. The mod appends /chat/completions automatically. You can also enter the full endpoint URL."
 }
