@@ -24,11 +24,10 @@ jobs:
           repository: spacechase0/StardewValleyMods
           ref: develop
           path: source
+          submodules: recursive
 
       - name: Install .NET and Stardew Valley reference assemblies
         uses: Pathoschild/SMAPI-ModBuildWorkflow/add-build-environment@v1
-        with:
-          working-directory: source
 
       - name: Apply universal Chinese patch
         run: python3 patch/gmcm-patch/apply_patch.py source
