@@ -16,6 +16,18 @@ namespace UnlimitedEventExpansion
         public const string ModelGemini31FlashLite = "gemini-3.1-flash-lite";
         public const string ModelGemini3FlashPreview = "gemini-3-flash-preview";
 
+        public const string ProviderAuto = "Auto (original behavior)";
+        public const string ProviderOpenAI = "OpenAI";
+        public const string ProviderGemini = "Gemini";
+        public const string ProviderCustom = "Custom (OpenAI-compatible)";
+        public static readonly string[] ApiProviders =
+        {
+            ProviderAuto,
+            ProviderOpenAI,
+            ProviderGemini,
+            ProviderCustom
+        };
+
         public const string EventLengthShort = "short";
         public const string EventLengthMedium = "medium";
         public const string EventLengthLong = "long";
@@ -67,6 +79,8 @@ namespace UnlimitedEventExpansion
                 && GeminiModels.Contains(model, StringComparer.OrdinalIgnoreCase);
         }
 
+        public string ApiProvider { get; set; } = ProviderAuto;
+        public string CustomApiBaseUrl { get; set; } = "https://api.deepseek.com";
         public string Key { get; set; } = "";
         public string Model { get; set; } = ModelGpt51;
         public bool AllowEarlyEvent { get; set; } = false;
@@ -75,6 +89,5 @@ namespace UnlimitedEventExpansion
         public string CharacteristicMode { get; set; } = CharacteristicModeShort;
         public string Language { get; set; } = LanguageEnglish;
         public string NpcProfileTheme { get; set; } = "vanilla";
-
     }
 }
