@@ -5,18 +5,14 @@ using System.Linq;
 
 namespace UnlimitedEventExpansion
 {
-
     public partial class ModEntry
     {
-
         public static void ConfigMenu(IContentPatcherAPI api, IManifest modManifest, IModHelper helper)
         {
-            // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = helper.ModRegistry.GetApi<UnlimitedEventExpansion.Data.IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
                 return;
 
-            // register mod
             configMenu.Register(
                 mod: modManifest,
                 reset: () => Config = new ModConfig(),
@@ -24,9 +20,9 @@ namespace UnlimitedEventExpansion
             );
 
             configMenu.AddSectionTitle(
-                            mod: modManifest,
-                            text: () => GetTranslation("config.section.language")
-                        );
+                mod: modManifest,
+                text: () => GetTranslation("config.section.language")
+            );
 
             configMenu.AddTextOption(
                 mod: modManifest,
@@ -41,9 +37,7 @@ namespace UnlimitedEventExpansion
                 ? Directory.GetDirectories(npcProfilePath).Select(Path.GetFileName).Where(name => !string.IsNullOrEmpty(name)).ToArray()!
                 : new[] { "vanilla" };
             if (themeOptions.Length == 0)
-            {
                 themeOptions = new[] { "vanilla" };
-            }
 
             configMenu.AddTextOption(
                 mod: modManifest,
@@ -68,6 +62,23 @@ namespace UnlimitedEventExpansion
 
             configMenu.AddTextOption(
                 mod: modManifest,
+                name: () => GetTranslation("config.provider.name"),
+                tooltip: () => GetTranslation("config.provider.tooltip"),
+                getValue: () => Config.ApiProvider,
+                setValue: value => Config.ApiProvider = string.IsNullOrWhiteSpace(value) ? ModConfig.ProviderAuto : value.Trim(),
+                allowedValues: ModConfig.ApiProviders
+            );
+
+            configMenu.AddTextOption(
+                mod: modManifest,
+                name: () => GetTranslation("config.base-url.name"),
+                tooltip: () => GetTranslation("config.base-url.tooltip"),
+                getValue: () => Config.CustomApiBaseUrl ?? "",
+                setValue: value => Config.CustomApiBaseUrl = value?.Trim() ?? ""
+            );
+
+            configMenu.AddTextOption(
+                mod: modManifest,
                 getValue: () => Config?.Key ?? "",
                 setValue: value => Config.Key = value?.Trim() ?? "",
                 name: () => GetTranslation("config.key.name"),
@@ -79,8 +90,10 @@ namespace UnlimitedEventExpansion
                 name: () => GetTranslation("config.model.name"),
                 tooltip: () => GetTranslation("config.model.tooltip"),
                 getValue: () => Config.Model,
-                setValue: value => Config.Model = value,
-                allowedValues: ModConfig.AllSupportedModels,
+                setValue: value => Config.Model = value?.Trim() ?? "",
+                allowedValues: string.Equals(Config.ApiProvider, ModConfig.ProviderCustom, System.StringComparison.OrdinalIgnoreCase)
+                    ? null
+                    : ModConfig.AllSupportedModels,
                 formatAllowedValue: FormatModel
             );
 
@@ -167,7 +180,5 @@ namespace UnlimitedEventExpansion
                 _ => value
             };
         }
-
     }
-
 }
