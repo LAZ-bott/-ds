@@ -149,12 +149,88 @@ namespace UnlimitedEventExpansion
 
     private static async Task<string> RequestAiResponseAsync(string instructionPrompt, string userPrompt)
     {
-      if (ModConfig.IsGeminiModel(EventModel))
-      {
+      string provider = Config?.ApiProvider ?? ModConfig.ProviderAuto;
+
+      if (string.Equals(provider, ModConfig.ProviderCustom, StringComparison.OrdinalIgnoreCase))
+        return await RequestCustomChatCompletionsResponseAsync(instructionPrompt, userPrompt);
+
+      if (string.Equals(provider, ModConfig.ProviderGemini, StringComparison.OrdinalIgnoreCase))
         return await RequestGeminiResponseAsync(instructionPrompt, userPrompt);
+
+      if (string.Equals(provider, ModConfig.ProviderOpenAI, StringComparison.OrdinalIgnoreCase))
+        return await RequestOpenAiResponseAsync(instructionPrompt, userPrompt);
+
+      // Auto preserves the original model-based routing for existing configs.
+      return ModConfig.IsGeminiModel(EventModel)
+        ? await RequestGeminiResponseAsync(instructionPrompt, userPrompt)
+        : await RequestOpenAiResponseAsync(instructionPrompt, userPrompt);
+    }
+
+    private static async Task<string> RequestCustomChatCompletionsResponseAsync(string instructionPrompt, string userPrompt)
+    {
+      string baseUrl = (Config?.CustomApiBaseUrl ?? string.Empty).Trim().TrimEnd('/');
+      if (string.IsNullOrWhiteSpace(baseUrl))
+      {
+        SMonitor.Log("Custom API base URL is empty. Set it in Generic Mod Config Menu.", LogLevel.Error);
+        return string.Empty;
       }
 
-      return await RequestOpenAiResponseAsync(instructionPrompt, userPrompt);
+      string requestUrl = baseUrl.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase)
+        ? baseUrl
+        : baseUrl + "/chat/completions";
+
+      using var httpClient = new HttpClient();
+      httpClient.Timeout = TimeSpan.FromSeconds(120);
+      httpClient.DefaultRequestHeaders.Authorization =
+        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", EventKey);
+
+      var requestBody = new Dictionary<string, object>
+      {
+        { "model", EventModel },
+        { "messages", new object[]
+          {
+            new { role = "system", content = instructionPrompt },
+            new { role = "user", content = userPrompt }
+          }
+        },
+        { "max_tokens", 3000 },
+        { "response_format", new { type = "json_object" } }
+      };
+
+      string jsonRequest = JsonConvert.SerializeObject(requestBody);
+      using var httpContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+      using var httpResponse = await httpClient.PostAsync(requestUrl, httpContent);
+      string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+
+      if (!httpResponse.IsSuccessStatusCode)
+      {
+        SMonitor.Log($"Custom API error {(int)httpResponse.StatusCode}: {jsonResponse}", LogLevel.Error);
+        return string.Empty;
+      }
+
+      try
+      {
+        var responseJson = JObject.Parse(jsonResponse);
+        JToken? content = responseJson.SelectToken("$.choices[0].message.content");
+        string responseMessage = content?.Type == JTokenType.String
+          ? content.Value<string>() ?? string.Empty
+          : content is JArray parts
+            ? string.Join("\\n", parts.Select(part => part["text"]?.ToString()).Where(text => !string.IsNullOrWhiteSpace(text)))
+            : string.Empty;
+
+        if (string.IsNullOrWhiteSpace(responseMessage))
+        {
+          SMonitor.Log("Custom API response did not contain choices[0].message.content.", LogLevel.Error);
+          return string.Empty;
+        }
+
+        return NormalizeModelResponseText(responseMessage);
+      }
+      catch (JsonException ex)
+      {
+        SMonitor.Log($"Error parsing custom Chat Completions response: {ex.Message}", LogLevel.Error);
+        return string.Empty;
+      }
     }
 
     private static async Task<string> RequestOpenAiResponseAsync(string instructionPrompt, string userPrompt)
