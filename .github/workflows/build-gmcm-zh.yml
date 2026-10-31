@@ -1,0 +1,59 @@
+name: Build GMCM Universal Chinese
+
+on:
+  push:
+    branches:
+      - feature/gmcm-universal-zh
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout translation patch
+        uses: actions/checkout@v4
+        with:
+          path: patch
+
+      - name: Checkout GMCM source
+        uses: actions/checkout@v4
+        with:
+          repository: spacechase0/StardewValleyMods
+          ref: develop
+          path: source
+
+      - name: Install .NET and Stardew Valley reference assemblies
+        uses: Pathoschild/SMAPI-ModBuildWorkflow/add-build-environment@v1
+        with:
+          working-directory: source
+
+      - name: Apply universal Chinese patch
+        run: python3 patch/gmcm-patch/apply_patch.py source
+
+      - name: Build GMCM
+        run: dotnet build source/framework/GenericModConfigMenu/GenericModConfigMenu.csproj --configuration Release -p:SolutionDir=$GITHUB_WORKSPACE/source/
+
+      - name: Prepare release ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          ZIP="$(find source/_releases source/framework/GenericModConfigMenu -type f -name '*.zip' -print -quit 2>/dev/null || true)"
+          if [ -z "$ZIP" ]; then
+            echo "No release ZIP found. Build output:"
+            find source/framework/GenericModConfigMenu -maxdepth 5 -type f | sort | tail -100
+            exit 1
+          fi
+          cp "$ZIP" dist/GenericModConfigMenu-1.16.1-Universal-Chinese.zip
+          unzip -l dist/GenericModConfigMenu-1.16.1-Universal-Chinese.zip
+
+      - name: Upload installable mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: GenericModConfigMenu-Universal-Chinese
+          path: dist/GenericModConfigMenu-1.16.1-Universal-Chinese.zip
+          if-no-files-found: error
+          retention-days: 14
