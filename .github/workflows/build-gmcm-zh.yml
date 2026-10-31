@@ -32,6 +32,17 @@ jobs:
       - name: Apply universal Chinese patch
         run: python3 patch/gmcm-patch/apply_patch.py source
 
+      - name: Normalize shared source paths for Linux
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source/shared/SpaceShared.Mods/apis source/shared/SpaceShared.Mods/ui
+          cp -R source/shared/SpaceShared.Mods/APIs/. source/shared/SpaceShared.Mods/apis/
+          cp -R source/shared/SpaceShared.Mods/UI/. source/shared/SpaceShared.Mods/ui/
+          mkdir -p source/shared/SpaceShared.SourceGen/content source/shared/SpaceShared.SourceGen/contentassets
+          cp -R source/shared/SpaceShared.SourceGen/Content/. source/shared/SpaceShared.SourceGen/content/
+          cp -R source/shared/SpaceShared.SourceGen/ContentAssets/. source/shared/SpaceShared.SourceGen/contentassets/
+
       - name: Build GMCM
         run: dotnet build source/framework/GenericModConfigMenu/GenericModConfigMenu.csproj --configuration Release -p:SolutionDir=$GITHUB_WORKSPACE/source/
 
