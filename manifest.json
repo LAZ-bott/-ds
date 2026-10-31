@@ -1,8 +1,8 @@
 {
   "Name": "UnlimitedEventExpansion",
   "Author": "d5a1lamdtd",
-  "Version": "1.4",
-  "Description": "UnlimitedEventExpansion",
+  "Version": "1.4.1",
+  "Description": "UnlimitedEventExpansion with selectable custom OpenAI-compatible API support.",
   "UniqueID": "d5a1lamdtd.UnlimitedEventExpansion",
   "EntryDll": "UnlimitedEventExpansion.dll",
   "MinimumApiVersion": "4.0.0",
