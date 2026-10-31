@@ -725,6 +725,17 @@ namespace UnlimitedEventExpansion
 
         internal static void CheckAIUsage()
         {
+            if (string.Equals(Config.ApiProvider, ModConfig.ProviderCustom, StringComparison.OrdinalIgnoreCase))
+            {
+                EventModel = Config.Model?.Trim() ?? string.Empty;
+                EventKey = Config.Key?.Trim() ?? string.Empty;
+                EventReasoning = ResolveReasoningForModel(EventModel);
+                IsMaxedLimit = string.IsNullOrWhiteSpace(EventKey) || string.IsNullOrWhiteSpace(EventModel);
+                if (IsMaxedLimit)
+                    SMonitor.Log("Custom API is selected, but the API key or model is empty. Configure both in Generic Mod Config Menu.", LogLevel.Warn);
+                return;
+            }
+
             if (!string.IsNullOrWhiteSpace(Config.Key))
             {
                 EventModel = Config.Model;
