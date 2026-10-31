@@ -57,13 +57,13 @@ jobs:
             find source/framework/GenericModConfigMenu -maxdepth 5 -type f | sort | tail -100
             exit 1
           fi
-          cp "$ZIP" dist/GenericModConfigMenu-1.16.1-Universal-Chinese.zip
-          unzip -l dist/GenericModConfigMenu-1.16.1-Universal-Chinese.zip
+          cp "$ZIP" dist/GenericModConfigMenu-1.17.0-Universal-Chinese.zip
+          unzip -l dist/GenericModConfigMenu-1.17.0-Universal-Chinese.zip
 
       - name: Upload installable mod
         uses: actions/upload-artifact@v4
         with:
           name: GenericModConfigMenu-Universal-Chinese
-          path: dist/GenericModConfigMenu-1.16.1-Universal-Chinese.zip
+          path: dist/GenericModConfigMenu-1.17.0-Universal-Chinese.zip
           if-no-files-found: error
           retention-days: 14
