@@ -123,7 +123,7 @@ proj = re.sub(r'<Version>.*?</Version>', '<Version>1.17.0-zh.1</Version>', proj,
 if 'Content Include="auto-zh.json"' not in proj:
     proj = proj.replace(
         "</Project>",
-        '  <ItemGroup>\\n    <Content Include="auto-zh.json" CopyToOutputDirectory="PreserveNewest" />\\n  </ItemGroup>\\n</Project>'
+        "  <ItemGroup>" + chr(10) + '    <Content Include="auto-zh.json" CopyToOutputDirectory="PreserveNewest" />' + chr(10) + "  </ItemGroup>" + chr(10) + "</Project>"
     )
 p.write_text(proj, encoding="utf-8")
 
