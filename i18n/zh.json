@@ -1,0 +1,10 @@
+{
+    "config.provider.name": "AI 服务商",
+    "config.provider.tooltip": "自动模式保留原版按模型判断服务商的行为。选择“自定义”即可使用 DeepSeek 等 OpenAI 兼容接口。",
+    "config.base-url.name": "自定义 API 地址",
+    "config.base-url.tooltip": "DeepSeek 填写 https://api.deepseek.com。模组会自动补上 /chat/completions，也可以填写完整接口地址。",
+    "config.key.name": "API Key",
+    "config.key.tooltip": "填写所选服务商的 API 密钥。使用自定义接口时，填写对应服务商提供的 Key。",
+    "config.model.name": "模型",
+    "config.model.tooltip": "OpenAI/Gemini 可选择内置模型；自定义服务商请填写准确的模型 ID，例如 deepseek-chat。"
+}
