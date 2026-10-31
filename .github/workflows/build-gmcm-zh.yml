@@ -1,0 +1,51 @@
+name: Build GMCM Simplified Chinese Edition
+
+on:
+  push:
+    branches:
+      - gmcm-auto-zh
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GMCM source
+        uses: actions/checkout@v4
+        with:
+          repository: spacechase0/StardewValleyMods
+          ref: develop
+          path: source
+
+      - name: Checkout personal patch
+        uses: actions/checkout@v4
+        with:
+          repository: LAZ-bott/-ds
+          ref: gmcm-auto-zh
+          path: patch
+
+      - name: Apply translation enhancement
+        run: python3 patch/gmcm-patch/patch_gmcm.py
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Install Stardew Valley build references
+        uses: Pathoschild/SMAPI-ModBuildWorkflow/add-build-environment@v1
+
+      - name: Build and package
+        run: dotnet build framework/GenericModConfigMenu/GenericModConfigMenu.csproj --configuration Release -p:SolutionDir="$GITHUB_WORKSPACE/source/"
+        working-directory: source
+
+      - name: Upload finished mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: GMCM-Simplified-Chinese-1.17.0-zh.1
+          path: source/_releases/*.zip
+          if-no-files-found: error
+          retention-days: 14
