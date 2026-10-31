@@ -3,10 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>annotations</Nullable>
-		<EmbeddedAiEnvFile>$(MSBuildProjectDirectory)\.env</EmbeddedAiEnvFile>
-		<EmbeddedAiSecretsGeneratedFile>$(BaseIntermediateOutputPath)EmbeddedAiSecrets.g.cs</EmbeddedAiSecretsGeneratedFile>
-	</PropertyGroup>
+		<Nullable>annotations</Nullable></PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -22,13 +19,5 @@
 		</None>
 	</ItemGroup>
 
-	<Target Name="GenerateEmbeddedAiSecrets" BeforeTargets="CoreCompile">
-		<Exec
-			Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\build\GenerateEmbeddedAiSecrets.ps1&quot; -EnvFile &quot;$(EmbeddedAiEnvFile)&quot; -OutputFile &quot;$(EmbeddedAiSecretsGeneratedFile)&quot;"
-			WorkingDirectory="$(MSBuildProjectDirectory)" />
-
-		<ItemGroup>
-			<Compile Include="$(EmbeddedAiSecretsGeneratedFile)" Visible="false" />
-		</ItemGroup>
-	</Target>
+	
 </Project>
