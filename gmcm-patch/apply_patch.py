@@ -119,7 +119,12 @@ for locale, additions in {
 # Set a clearly identifiable personal build version.
 p = mod / "GenericModConfigMenu.csproj"
 proj = p.read_text(encoding="utf-8-sig")
-proj = re.sub(r'<Version>.*?</Version>', '<Version>1.16.1-zh.1</Version>', proj, count=1)
+proj = re.sub(r'<Version>.*?</Version>', '<Version>1.17.0-zh.1</Version>', proj, count=1)
+if 'Content Include="auto-zh.json"' not in proj:
+    proj = proj.replace(
+        "</Project>",
+        '  <ItemGroup>\\n    <Content Include="auto-zh.json" CopyToOutputDirectory="PreserveNewest" />\\n  </ItemGroup>\\n</Project>'
+    )
 p.write_text(proj, encoding="utf-8")
 
 print("Applied GMCM universal Chinese dictionary patch.")
