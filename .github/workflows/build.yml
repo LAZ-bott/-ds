@@ -1,0 +1,34 @@
+name: Build UnlimitedEventExpansion
+
+on:
+  push:
+    branches:
+      - feature/deepseek-custom-api
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install .NET and Stardew Valley reference assemblies
+        uses: Pathoschild/SMAPI-ModBuildWorkflow/add-build-environment@v1
+          # Installs the .NET SDK and reference assemblies without downloading the game.
+
+      - name: Build mod
+        run: dotnet build UnlimitedEventExpansion.csproj --configuration Release
+
+      - name: Upload compiled mod ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: UnlimitedEventExpansion-DeepSeek
+          path: |
+            **/bin/Release/*.zip
+            **/bin/Release/net6.0/*.zip
+          if-no-files-found: error
+          retention-days: 14
